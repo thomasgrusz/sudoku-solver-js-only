@@ -124,6 +124,7 @@ function startSudokuSolver() {
   document.querySelector("td input[type='text']").focus();
 };
 
+// ************* The script starts here *************
 // Start the script as soon as the DOM has been completely parsed
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", startSudokuSolver);
