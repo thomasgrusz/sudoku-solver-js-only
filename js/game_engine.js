@@ -9,16 +9,16 @@ function createSudokuGrid() {
   table.className = "mx-auto my-0"; // Add Bootstrap classes to center table horizontally
   
   // Create rows and cells for the Sudoku grid
-  for (let i = 1; i <= 9; i++) {
+  for (let r of boardEncodings.rows) {
       let row = document.createElement("tr");
-      for (let j = 1; j <= 9; j++) {
+      for (let c of boardEncodings.cols) {
           let cell = document.createElement("td");
           // Add a black border at the bottom, if at vertical position 3 or 6
-          if (i === 3 || i === 6) {
+          if (r === 'C' || r === 'F') {
             cell.className = "border-bottom border-dark";
           }
           // Add a black border at the right, if at horizontal position 3 or 6
-          if (j === 3 || j === 6) {
+          if (c === '3' || c === '6') {
             if (cell.className === "") {
               cell.className = "border-end border-dark";
             } else {
@@ -27,6 +27,7 @@ function createSudokuGrid() {
           }
           // Create an input field for each cell
           let inputField = document.createElement("input");
+          inputField.id = r + c
           inputField.type = "text";
           inputField.className = "form-control bg-light text-center"; // Add Bootstrap form-control class
           inputField.setAttribute("maxlength", "1"); // Limit input to one character
@@ -71,23 +72,21 @@ document.getElementById("error").innerHTML = alertInjection;
 // Function to solve the Sudoku puzzle
 function solveSudoku() {
   // Get user input from the Sudoku grid
-  let sudokuString = "";
+  let validCharacters = "123456789";
+  let sudokuGrid = {};
   let tdElements = document.querySelectorAll("td input[type='text']");
   tdElements.forEach((td) => {
-    sudokuString += td.value || ".";
+    sudokuGrid[td.id] = td.value || validCharacters;
   });
   // Sanitize input, ensure numbers 1-9
-  let validCharacters = "123456789.";
-  if (![...sudokuString].every(char => [...validCharacters].includes(char))) {
+  if (!Object.values(sudokuGrid).every(char => [...validCharacters].includes(char) || char === validCharacters)) {
     injectAlert("Only numbers from 1-9!");
     return;
-  } else if ([...sudokuString].every(char => char === '.')) {
+  } else if (Object.values(sudokuGrid).every(char => char === validCharacters)) {
     return;
   }
   // Send string to search() function to solve the puzzle (transform to grid values beforehand)
-  console.log(sudokuString);
-  sudokuSolved = search(gridValues(sudokuString));
-  console.log(sudokuSolved);
+  sudokuSolved = search(sudokuGrid);
 
   // Check if there is a solution to the puzzle and if no display an error
   if (!sudokuSolved) {
@@ -95,21 +94,15 @@ function solveSudoku() {
     return;
   }
 
-  // Display the solution
-  // Transform the solved puzzle object back into a string
-  let sudouSolvedString = "";
-  for (box of boardEncodings.boxes) {
-    sudouSolvedString += sudokuSolved[box];
-  }
-  console.log(sudouSolvedString);
+  // TODO: add green color to the solved input fields
   // Display the solved puzzle string in the html table
-  for (let i = 0; i < tdElements.length; i++) {
-    tdElements[i].value = sudouSolvedString[i];
+  for ( let box of boardEncodings.boxes) {
+    document.getElementById(box).value = sudokuSolved[box];
   }
-  // Change the "solve-button" text to "Click to restart!"
+
+  // Change the "solve-button" text to "Click to restart!" and reset the board
   createButton("Click to restart!", "btn btn-warning my-4");
   document.getElementById("solve-button").firstChild.addEventListener("click", startSudokuSolver);
-  // reset the board and 'solve-button'
 }
 
 // Function to start the Sudoku Solver
