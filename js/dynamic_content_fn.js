@@ -48,13 +48,14 @@ function createButton(buttonText, buttonCLass) {
   button.innerHTML = "";
   button.className = buttonCLass;
   button.innerText = buttonText;
+  document.getElementById("solve-button").innerHTML = "";
   document.getElementById("solve-button").appendChild(button);
 }
 
 // Function to create a red colored alert with a custom message
 function injectAlert (alertMessage) {
 let alertInjection =
-`<section class="alert alert-danger alert-dismissible fade show mt-4">
+`<div class="alert alert-danger alert-dismissible fade show mt-4">
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
     class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img"
     aria-label="Warning:">
@@ -62,21 +63,10 @@ let alertInjection =
         d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
   </svg>` + alertMessage +
   `<button id="error-close-button" type="button" data-bs-dismiss="alert" class="btn-close"></button>
-  </section>
+  </div>
 `;
 document.getElementById("error").innerHTML = alertInjection;
 }
-// Function to start the Sudoku Solver
-function startSudokuSolver() {
-  createSudokuGrid();
-  createButton("SOVLE", "btn btn-success my-4");
-  // Add Eventlistener to solve-button
-  document.getElementById("solve-button").firstChild.addEventListener("click", solveSudoku);
-  // Make container div visible
-  document.getElementById("container").style.display = "block";
-  // Set the focus on the first input element
-  document.querySelector("td input[type='text']").focus();
-};
 
 // Function to solve the Sudoku puzzle
 function solveSudoku() {
@@ -98,20 +88,41 @@ function solveSudoku() {
   console.log(sudokuString);
   sudokuSolved = search(gridValues(sudokuString));
   console.log(sudokuSolved);
+
+  // Check if there is a solution to the puzzle and if no display an error
+  if (!sudokuSolved) {
+    injectAlert("I did not find a solution to this Sudoku puzzle!");
+    return;
+  }
+
+  // Display the solution
   // Transform the solved puzzle object back into a string
   let sudouSolvedString = "";
-  for (box of boxes) {
+  for (box of boardEncodings.boxes) {
     sudouSolvedString += sudokuSolved[box];
   }
   console.log(sudouSolvedString);
-  // Display the solved puzzle string in the html grid
+  // Display the solved puzzle string in the html table
   for (let i = 0; i < tdElements.length; i++) {
     tdElements[i].value = sudouSolvedString[i];
   }
-  // and check the result, if necessary show error.
-  // otherwise display the results and change the "solve-button" text to "Play another game?"
+  // Change the "solve-button" text to "Click to restart!"
+  createButton("Click to restart!", "btn btn-warning my-4");
+  document.getElementById("solve-button").firstChild.addEventListener("click", startSudokuSolver);
   // reset the board and 'solve-button'
 }
+
+// Function to start the Sudoku Solver
+function startSudokuSolver() {
+  createSudokuGrid();
+  createButton("SOVLE", "btn btn-success my-4");
+  // Add Eventlistener to solve-button
+  document.getElementById("solve-button").firstChild.addEventListener("click", solveSudoku);
+  // Make container div visible
+  document.getElementById("container").style.display = "block";
+  // Set the focus on the first input element
+  document.querySelector("td input[type='text']").focus();
+};
 
 // Start the script as soon as the DOM has been completely parsed
 if (document.readyState === "loading") {

@@ -18,10 +18,39 @@
 
 // For both encodings, the values for empty boxes is a '.' (period).
 
-let rows = 'ABCDEFGHI';
-let cols = '123456789';
+// This is the global boardEncodings Object
+boardEncodings = {
+  rows: 'ABCDEFGHI',
+  cols: '123456789',
+  cross: function(a, b) {
+  return [...a].flatMap(r => [...b].map(c => r + c));
+  }
+};
 
-// cross() helper function creates all combinations of letters in 2 strings
+// Here we populate the global boardEncodings Object
+boardEncodings.boxes = boardEncodings.cross(boardEncodings.rows, boardEncodings.cols)
+boardEncodings.row_units = boardEncodings.rows.split('').map(r => boardEncodings.cross(r, boardEncodings.cols));
+boardEncodings.column_units = boardEncodings.cols.split('').map(c => boardEncodings.cross(boardEncodings.rows, c));
+boardEncodings.square_units = ['ABC', 'DEF', 'GHI'].flatMap(rs => ['123', '456', '789'].map(cs => boardEncodings.cross(rs, cs)));
+boardEncodings.unitlist = boardEncodings.row_units.concat(boardEncodings.column_units, boardEncodings.square_units);
+boardEncodings.units = {};
+for (let s of boardEncodings.boxes) {
+  const x = [];
+  for (let u of boardEncodings.unitlist) {
+    if (u.includes(s)) {
+      x.push(u);
+    }
+  }
+  boardEncodings.units[s] = x;
+}
+boardEncodings.peers = {};
+for (let s of boardEncodings.boxes) {
+  boardEncodings.peers[s] = new Set(
+    [].concat(...boardEncodings.units[s]).filter(item => item !== s)
+  );
+}
+
+// This is a more verbose version of the cross() helper function above, that creates all combinations of letters in 2 strings
 //function cross(a, b) {
 //  let result = [];
 //  for (let r of a) {
@@ -31,39 +60,6 @@ let cols = '123456789';
 //  }
 //  return result;
 //}
-
-// This is a more concise version of the cross helper function
-function cross(a, b) {
-  return [...a].flatMap(r => [...b].map(c => r + c));
-}
-
-const boxes = cross(rows, cols);
-
-const row_units = rows.split('').map(r => cross(r, cols));
-
-const column_units = cols.split('').map(c => cross(rows, c));
-
-const square_units = ['ABC', 'DEF', 'GHI'].flatMap(rs => ['123', '456', '789'].map(cs => cross(rs, cs)));
-
-const unitlist = row_units.concat(column_units, square_units);
-
-const units = {};
-for (let s of boxes) {
-  const x = [];
-  for (let u of unitlist) {
-    if (u.includes(s)) {
-      x.push(u);
-    }
-  }
-  units[s] = x;
-}
-
-const peers = {};
-for (let s of boxes) {
-  peers[s] = new Set(
-    [].concat(...units[s]).filter(item => item !== s)
-  );
-}
 
 // Convert string representation of puzzle into dictionary
 function gridValues(grid) {
@@ -81,8 +77,8 @@ function gridValues(grid) {
         throw new Error('Input grid does not have 81 characters!');
     }
     const result = {};
-    for (let i = 0; i < boxes.length; i++) {
-        result[boxes[i]] = values[i];
+    for (let i = 0; i < boardEncodings.boxes.length; i++) {
+        result[boardEncodings.boxes[i]] = values[i];
     }
     return result;
 }
@@ -91,9 +87,9 @@ function gridValues(grid) {
 // Input: dictionary
 function displayDot(values) {
   const line = '------+------+------';
-  for (let r of rows) {
+  for (let r of boardEncodings.rows) {
     let rowOutput = '';
-    for (let c of cols) {
+    for (let c of boardEncodings.cols) {
       const value = values[r + c].length === 1 ? values[r + c] : '.';
       rowOutput += value + ' ' + (c === '3' || c === '6' ? '|' : '');
     }
@@ -106,11 +102,11 @@ function displayDot(values) {
 
 // Display the values as a 2-D grid. Input: sudoku in dictionary form
 function displayFull(values) {
-  const width = 1 + Math.max(...boxes.map(s => values[s].length));
+  const width = 1 + Math.max(...boardEncodings.boxes.map(s => values[s].length));
   const line = Array.from({ length: 3 }, () => '-'.repeat(width * 3)).join('+');
-  for (let r of rows) {
+  for (let r of boardEncodings.rows) {
     let rowOutput = '';
-    for (let c of cols) {
+    for (let c of boardEncodings.cols) {
       rowOutput += values[r + c].padStart(width, ' ') + (c === '3' || c === '6' ? '|' : '');
     }
     console.log(rowOutput);
@@ -129,7 +125,7 @@ function eliminate(values) {
   for (let box of Object.keys(values)) {
     if (values[box].length === 1) {
       const eliminationValue = values[box];
-      for (let peer of peers[box]) {
+      for (let peer of boardEncodings.peers[box]) {
         values[peer] = values[peer].replace(eliminationValue, '');
       }
     }
@@ -142,7 +138,7 @@ function eliminate(values) {
 // digit that only fits in one possible box, it will assign that digit to that
 // box.
 function onlyChoice(values) {
-  for (let unit of unitlist) {
+  for (let unit of boardEncodings.unitlist) {
     for (let digit of '123456789') {
       const dplaces = unit.filter(box => values[box].includes(digit));
       if (dplaces.length === 1) {
