@@ -94,10 +94,18 @@ function solveSudoku() {
     return;
   }
 
-  // TODO: add green color to the solved input fields
   // Display the solved puzzle string in the html table
+  if (document.getElementById("error").firstChild) {    // Remove alert, if existing
+    document.getElementById("error").removeChild(document.getElementById("error").firstChild);
+  }
+  const originalFields = [...tdElements].filter(td => td.value.length === 1).map(td => td.id); // Get original user input fields
+  originalFields.forEach(field => document.getElementById(field).classList.add("fw-bold")); // Make original user input bold
   for ( let box of boardEncodings.boxes) {
-    document.getElementById(box).value = sudokuSolved[box];
+    let inputField = document.getElementById(box);
+    if (!originalFields.includes(box)) {
+      inputField.value = sudokuSolved[box];
+      inputField.classList.add("text-success"); // Add green color to solution input fields
+    }
   }
 
   // Change the "solve-button" text to "Click to restart!" and reset the board
