@@ -50,7 +50,7 @@ for (let s of boardEncodings.boxes) {
   );
 }
 
-// This is a more verbose version of the cross() helper function above, that creates all combinations of letters in 2 strings
+// This is a more verbose version of the cross() helper function above, that creates the cell encodings, i.e. A1, A2, ...
 //function cross(a, b) {
 //  let result = [];
 //  for (let r of a) {
@@ -83,7 +83,7 @@ function gridValues(grid) {
     return result;
 }
 
-// ---- Display 2D grid ----
+// ---- Display 2D grid in console (dev helper function) ----
 // Input: dictionary
 function displayDot(values) {
   const line = '------+------+------';
@@ -100,7 +100,8 @@ function displayDot(values) {
   }
 }
 
-// Display the values as a 2-D grid. Input: sudoku in dictionary form
+// Display the values as a 2-D grid in console. Input: sudoku in dictionary form
+// (dev helper function)
 function displayFull(values) {
   const width = 1 + Math.max(...boardEncodings.boxes.map(s => values[s].length));
   const line = Array.from({ length: 3 }, () => '-'.repeat(width * 3)).join('+');
