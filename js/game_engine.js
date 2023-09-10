@@ -31,7 +31,8 @@ function createSudokuGrid() {
           inputField.type = "text";
           inputField.className = "form-control bg-light text-center"; // Add Bootstrap form-control class
           inputField.setAttribute("maxlength", "1"); // Limit input to one character
-          inputField.style.width = "40px"; // Adjust the width as needed
+          inputField.style.maxWidth = "40px"; // Adjust the width as needed
+          inputField.style.minWidth = "35px"; // Adjust the width as needed
 
           // Add the input field to the cell
           cell.appendChild(inputField);
