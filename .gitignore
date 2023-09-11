@@ -1,3 +1,4 @@
 .DS_Store
-venv
-.ipynb_checkpoints
+Notebooks
+.vscode
+node_modules
