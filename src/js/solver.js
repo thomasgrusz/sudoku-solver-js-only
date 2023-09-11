@@ -85,37 +85,37 @@ function gridValues(grid) {
 
 // ---- Display 2D grid in console (dev helper function) ----
 // Input: dictionary
-function displayDot(values) {
-  const line = '------+------+------';
-  for (let r of boardEncodings.rows) {
-    let rowOutput = '';
-    for (let c of boardEncodings.cols) {
-      const value = values[r + c].length === 1 ? values[r + c] : '.';
-      rowOutput += value + ' ' + (c === '3' || c === '6' ? '|' : '');
-    }
-    console.log(rowOutput);
-    if (r === 'C' || r === 'F') {
-      console.log(line);
-    }
-  }
-}
+// function displayDot(values) {
+//   const line = '------+------+------';
+//   for (let r of boardEncodings.rows) {
+//     let rowOutput = '';
+//     for (let c of boardEncodings.cols) {
+//       const value = values[r + c].length === 1 ? values[r + c] : '.';
+//       rowOutput += value + ' ' + (c === '3' || c === '6' ? '|' : '');
+//     }
+//     console.log(rowOutput);
+//     if (r === 'C' || r === 'F') {
+//       console.log(line);
+//     }
+//   }
+// }
 
 // Display the values as a 2-D grid in console. Input: sudoku in dictionary form
 // (dev helper function)
-function displayFull(values) {
-  const width = 1 + Math.max(...boardEncodings.boxes.map(s => values[s].length));
-  const line = Array.from({ length: 3 }, () => '-'.repeat(width * 3)).join('+');
-  for (let r of boardEncodings.rows) {
-    let rowOutput = '';
-    for (let c of boardEncodings.cols) {
-      rowOutput += values[r + c].padStart(width, ' ') + (c === '3' || c === '6' ? '|' : '');
-    }
-    console.log(rowOutput);
-    if (r === 'C' || r === 'F') {
-      console.log(line);
-    }
-  }
-}
+// function displayFull(values) {
+//   const width = 1 + Math.max(...boardEncodings.boxes.map(s => values[s].length));
+//   const line = Array.from({ length: 3 }, () => '-'.repeat(width * 3)).join('+');
+//   for (let r of boardEncodings.rows) {
+//     let rowOutput = '';
+//     for (let c of boardEncodings.cols) {
+//       rowOutput += values[r + c].padStart(width, ' ') + (c === '3' || c === '6' ? '|' : '');
+//     }
+//     console.log(rowOutput);
+//     if (r === 'C' || r === 'F') {
+//       console.log(line);
+//     }
+//   }
+// }
 
 // ---- Solving Algorithms ----
 
