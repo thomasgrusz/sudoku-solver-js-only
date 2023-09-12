@@ -12,7 +12,8 @@ function clean() {
 // Minify HTML files
 function minifyHTML() {
   return gulp.src('src/index.html')
-    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(htmlmin({ collapseWhitespace: true,
+                    removeComments: true }))
     .pipe(gulp.dest('dist'));
 }
 
