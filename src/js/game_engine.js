@@ -28,7 +28,7 @@ function createSudokuGrid() {
       // Create an input field for each cell
       let inputField = document.createElement("input");
       inputField.id = r + c;
-      inputField.type = "text";
+      inputField.type = "number";
       inputField.className =
         "form-control bg-light border-dark-subtle text-center"; // Add Bootstrap form-control class
       inputField.setAttribute("maxlength", "1"); // Limit input to one character
@@ -79,7 +79,7 @@ function solveSudoku() {
   // Get user input from the Sudoku grid
   let validCharacters = "123456789";
   let sudokuGrid = {};
-  let tdElements = document.querySelectorAll("td input[type='text']");
+  let tdElements = document.querySelectorAll("td input[type='number']");
   tdElements.forEach((td) => {
     sudokuGrid[td.id] = td.value || validCharacters;
   });
@@ -144,7 +144,7 @@ function startSudokuSolver() {
   // Make container div visible
   document.getElementById("container").style.display = "block";
   // Set the focus on the first input element
-  document.querySelector("td input[type='text']").focus();
+  document.querySelector("td input[type='number']").focus();
 }
 
 // ************* The script starts here *************
