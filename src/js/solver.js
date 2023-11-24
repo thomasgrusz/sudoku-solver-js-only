@@ -19,20 +19,32 @@
 // For both encodings, the values for empty boxes is a '.' (period).
 
 // This is the global boardEncodings Object
-boardEncodings = {
-  rows: 'ABCDEFGHI',
-  cols: '123456789',
-  cross: function(a, b) {
-  return [...a].flatMap(r => [...b].map(c => r + c));
-  }
+const boardEncodings = {
+  rows: "ABCDEFGHI",
+  cols: "123456789",
+  cross: function (a, b) {
+    return [...a].flatMap((r) => [...b].map((c) => r + c));
+  },
 };
 
 // Here we populate the global boardEncodings Object
-boardEncodings.boxes = boardEncodings.cross(boardEncodings.rows, boardEncodings.cols)
-boardEncodings.row_units = boardEncodings.rows.split('').map(r => boardEncodings.cross(r, boardEncodings.cols));
-boardEncodings.column_units = boardEncodings.cols.split('').map(c => boardEncodings.cross(boardEncodings.rows, c));
-boardEncodings.square_units = ['ABC', 'DEF', 'GHI'].flatMap(rs => ['123', '456', '789'].map(cs => boardEncodings.cross(rs, cs)));
-boardEncodings.unitlist = boardEncodings.row_units.concat(boardEncodings.column_units, boardEncodings.square_units);
+boardEncodings.boxes = boardEncodings.cross(
+  boardEncodings.rows,
+  boardEncodings.cols
+);
+boardEncodings.row_units = boardEncodings.rows
+  .split("")
+  .map((r) => boardEncodings.cross(r, boardEncodings.cols));
+boardEncodings.column_units = boardEncodings.cols
+  .split("")
+  .map((c) => boardEncodings.cross(boardEncodings.rows, c));
+boardEncodings.square_units = ["ABC", "DEF", "GHI"].flatMap((rs) =>
+  ["123", "456", "789"].map((cs) => boardEncodings.cross(rs, cs))
+);
+boardEncodings.unitlist = boardEncodings.row_units.concat(
+  boardEncodings.column_units,
+  boardEncodings.square_units
+);
 boardEncodings.units = {};
 for (let s of boardEncodings.boxes) {
   const x = [];
@@ -46,7 +58,7 @@ for (let s of boardEncodings.boxes) {
 boardEncodings.peers = {};
 for (let s of boardEncodings.boxes) {
   boardEncodings.peers[s] = new Set(
-    [].concat(...boardEncodings.units[s]).filter(item => item !== s)
+    [].concat(...boardEncodings.units[s]).filter((item) => item !== s)
   );
 }
 
@@ -63,24 +75,24 @@ for (let s of boardEncodings.boxes) {
 
 // Convert string representation of puzzle into dictionary
 function gridValues(grid) {
-    const values = [];
-    const allDigits = '123456789';
+  const values = [];
+  const allDigits = "123456789";
 
-    for (let c of grid) {
-        if (c === '.') {
-            values.push(allDigits);
-        } else if (allDigits.includes(c)) {
-          values.push(c);
-        }
+  for (let c of grid) {
+    if (c === ".") {
+      values.push(allDigits);
+    } else if (allDigits.includes(c)) {
+      values.push(c);
     }
-    if (values.length !== 81) {
-        throw new Error('Input grid does not have 81 characters!');
-    }
-    const result = {};
-    for (let i = 0; i < boardEncodings.boxes.length; i++) {
-        result[boardEncodings.boxes[i]] = values[i];
-    }
-    return result;
+  }
+  if (values.length !== 81) {
+    throw new Error("Input grid does not have 81 characters!");
+  }
+  const result = {};
+  for (let i = 0; i < boardEncodings.boxes.length; i++) {
+    result[boardEncodings.boxes[i]] = values[i];
+  }
+  return result;
 }
 
 // ---- Display 2D grid in console (dev helper function) ----
@@ -127,7 +139,7 @@ function eliminate(values) {
     if (values[box].length === 1) {
       const eliminationValue = values[box];
       for (let peer of boardEncodings.peers[box]) {
-        values[peer] = values[peer].replace(eliminationValue, '');
+        values[peer] = values[peer].replace(eliminationValue, "");
       }
     }
   }
@@ -140,8 +152,8 @@ function eliminate(values) {
 // box.
 function onlyChoice(values) {
   for (let unit of boardEncodings.unitlist) {
-    for (let digit of '123456789') {
-      const dplaces = unit.filter(box => values[box].includes(digit));
+    for (let digit of "123456789") {
+      const dplaces = unit.filter((box) => values[box].includes(digit));
       if (dplaces.length === 1) {
         values[dplaces[0]] = digit;
       }
@@ -156,13 +168,17 @@ function onlyChoice(values) {
 function reducePuzzle(values) {
   let stalled = false;
   while (!stalled) {
-    const solvedValuesBefore = Object.values(values).filter(value => value.length === 1).length;
+    const solvedValuesBefore = Object.values(values).filter(
+      (value) => value.length === 1
+    ).length;
     eliminate(values);
     onlyChoice(values);
-    const solvedValuesAfter = Object.values(values).filter(value => value.length === 1).length;
+    const solvedValuesAfter = Object.values(values).filter(
+      (value) => value.length === 1
+    ).length;
     stalled = solvedValuesBefore === solvedValuesAfter;
     // Sanity check for boxes with zero available values
-    if (Object.values(values).some(value => value.length === 0)) {
+    if (Object.values(values).some((value) => value.length === 0)) {
       return false;
     }
   }
@@ -176,16 +192,20 @@ function search(values) {
   if (!values) {
     return false;
   }
-  if (Object.values(values).every(value => value.length === 1)) {
+  if (Object.values(values).every((value) => value.length === 1)) {
     return values; // Solved!
   }
   // Using depth-first search and propagation, try all possible values.
   // Choose one of the unfilled squares with the fewest possibilities
-  const [s, n] = Object.entries(values).filter(([s, value]) => value.length > 1).reduce((shortest, [s, value]) => value.length < shortest[1].length ? [s,  value] : shortest);
+  const [s, n] = Object.entries(values)
+    .filter(([s, value]) => value.length > 1)
+    .reduce((shortest, [s, value]) =>
+      value.length < shortest[1].length ? [s, value] : shortest
+    );
 
   // Now use recursion to solve each one of the resulting sudokus
   for (let value of values[s]) {
-    const newSudoku = { ...values };  // Make a copy
+    const newSudoku = { ...values }; // Make a copy
     newSudoku[s] = value;
     const attempt = search(newSudoku);
     if (attempt) {
