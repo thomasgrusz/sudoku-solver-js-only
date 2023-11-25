@@ -1,3 +1,12 @@
+// Function to detect small screen size (assumes touch screen)
+function detectTouchScreen() {
+  return "ontouchstart" in window || navigator.maxTouchPoints;
+
+  // let isTouchScreen = "ontouchstart" in window || navigator.maxTouchPoints;
+  // let isSmallScreen = window.matchMedia("(max-width: 576px)").matches;
+  // return isTouchScreen || isSmallScreen;
+}
+
 // Function to create a 9x9 Sudoku grid
 function createSudokuGrid() {
   // Get the section with id="board"
@@ -25,12 +34,17 @@ function createSudokuGrid() {
           cell.className += " border-end";
         }
       }
+
       // Create an input field for each cell
       let inputField = document.createElement("input");
+      if (detectTouchScreen()) {
+        inputField.type = "number";
+      } else {
+        inputField.type = "text";
+      }
       inputField.id = r + c;
-      inputField.type = "number";
       inputField.className =
-        "form-control bg-light border-dark-subtle text-center"; // Add Bootstrap form-control class
+        "form-control bg-light border-dark-subtle text-center input-field"; // Add Bootstrap form-control class
       inputField.setAttribute("maxlength", "1"); // Limit input to one character
       inputField.style.maxWidth = "40px"; // Adjust the width as needed
       inputField.style.minWidth = "35px"; // Adjust the width as needed
@@ -79,7 +93,7 @@ function solveSudoku() {
   // Get user input from the Sudoku grid
   let validCharacters = "123456789";
   let sudokuGrid = {};
-  let tdElements = document.querySelectorAll("td input[type='number']");
+  let tdElements = document.querySelectorAll("td input.input-field");
   tdElements.forEach((td) => {
     sudokuGrid[td.id] = td.value || validCharacters;
   });
@@ -144,7 +158,7 @@ function startSudokuSolver() {
   // Make container div visible
   document.getElementById("container").style.display = "block";
   // Set the focus on the first input element
-  document.querySelector("td input[type='number']").focus();
+  document.querySelector("td input.input-field").focus();
 }
 
 // ************* The script starts here *************
