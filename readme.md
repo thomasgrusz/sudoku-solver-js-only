@@ -2,6 +2,8 @@
 
 This project is a JavaScript-only port of another [Sudoku Solver project](https://github.com/thomasgrusz/Sudoku-Solver) that originally had a Python based backend. The purpose of this port is to simplify deployment by using a frontend only approach.
 
+<img src="./readme-images/sudoku_solver_300x333.png" width="300" alt="screenshot of the sudoku board and UI elements">
+
 ## Project Structure
 
 - The `src/` folder contains all source files, including two Jupyter Notebooks I used to port the code from Python to JavaScript.
